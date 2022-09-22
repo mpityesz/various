@@ -1,0 +1,63 @@
+client_max_body_size 128M;
+autoindex off;
+
+if ($request_method !~ ^(GET|POST)$ ) {
+    return 444;
+}
+
+#Hide the nginx version.
+server_tokens off;
+
+#Hide the PHP version.
+fastcgi_hide_header X-Powered-By;
+proxy_hide_header X-Powered-By;
+
+location / {
+    try_files $uri $uri/ /index.php?$query_string;
+}
+
+location ~* /xmlrpc.php$ {
+    allow 127.0.0.1;
+    deny all;
+}
+
+location ~* /(?:uploads|files|wp-content|wp-includes|akismet)/.*.php$ {
+    deny all;
+    access_log off;
+    log_not_found off;
+}
+
+location ~ /\.(svn|git)/* {
+    deny all;
+    access_log off;
+    log_not_found off;
+}
+location ~ /\.ht {
+    deny all;
+    access_log off;
+    log_not_found off;
+}
+location ~ /\.user.ini { 
+    deny all; 
+    access_log off;
+    log_not_found off;
+}
+
+location /stats/ {
+    log_not_found off;
+    access_log off;
+    auth_basic "Members Only";
+    auth_basic_user_file /etc/nginx/htpasswd/###FQDN###/.htpasswd_stats;
+}
+
+location /wp-admin/ {
+    log_not_found off;
+    access_log off;
+    auth_basic "Members Only";
+    auth_basic_user_file /etc/nginx/htpasswd/###FQDN###/.htpasswd_wp_admin;
+}
+
+#limit_req_zone $binary_remote_addr zone=WPRATELIMIT:10m rate=2r/s;
+#location ~ \wp-login.php$ {
+#    limit_req zone=WPRATELIMIT;
+#}
