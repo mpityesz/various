@@ -1,4 +1,6 @@
 Windows Registry Editor Version 5.00
+; Run in command line in Windows 11 setup dir:
+; setup.exe /product server
 
 [HKEY_CURRENT_USER\SOFTWARE\Microsoft\PCHC]
 "UpgradeEligibility"=dword:00000001
